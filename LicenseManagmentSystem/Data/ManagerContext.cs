@@ -15,5 +15,14 @@ namespace LicenseManagmentSystem.Data
         }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<LicenseKey> LicenseKeys { get; set; }
+        public DbSet<Product> Products { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Customer>().ToTable("Customer");
+            modelBuilder.Entity<LicenseKey>().ToTable("LicenseKey");
+            modelBuilder.Entity<Product>().ToTable("Product");
+        }
     }
 }
