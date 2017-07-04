@@ -12,7 +12,6 @@ namespace LicenseManagmentSystem.Models
         public int LicenseKeyID { get; set; }
         public int CustomerID { get; set; }
         public int ProductID { get; set; }
-        public string LicenseType { get; set; }
         public DateTime ExpiryDate { get; set; }
 
         public Product Product { get; set; }

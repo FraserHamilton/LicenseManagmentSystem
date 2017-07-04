@@ -10,7 +10,7 @@ namespace LicenseManagmentSystem.Models
         public int ID { get; set; }
         public string CompanyName { get; set; }
         public string Address { get; set; }
-        public int ContactNumber { get; set; }
+        public long ContactNumber { get; set; }
 
         public ICollection<LicenseKey> LicenseKeys { get; set; }
     }
