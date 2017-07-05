@@ -28,6 +28,32 @@
         <dd>
             @Html.DisplayFor(model => model.ContactNumber)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LicenseKeys)
+        </dt>
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Product</th>
+                    <th>Key</th>
+                    <th>Status</th>
+                </tr>
+                @foreach (var item in Model.LicenseKeys)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Product.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LicenseKeyID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(ModelItem => item.Active)
+                        </td>
+                    </tr>
+                }
+            </table>
+        </dd>
     </dl>
 </div>
 <div>

@@ -16,13 +16,23 @@ namespace LicenseManagmentSystem.Controllers
 
         public CustomersController(ManagerContext context)
         {
-            _context = context;    
+            _context = context;
         }
 
         // GET: Customers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Customers.ToListAsync());
+            ViewData["CurrentFilter"] = searchString;
+
+            var customers = from c in _context.Customers
+                           select c;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                customers = customers.Where(s => s.CompanyName.Contains(searchString));
+            }
+
+            return View(await customers.AsNoTracking().ToListAsync());
         }
 
         // GET: Customers/Details/5
@@ -34,7 +44,12 @@ namespace LicenseManagmentSystem.Controllers
             }
 
             var customer = await _context.Customers
+                .Include(s => s.LicenseKeys)
+                    .ThenInclude(e => e.Product)
+
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.ID == id);
+
             if (customer == null)
             {
                 return NotFound();
@@ -54,13 +69,22 @@ namespace LicenseManagmentSystem.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,CompanyName,Address,ContactNumber")] Customer customer)
+        public async Task<IActionResult> Create([Bind("CompanyName,Address,ContactNumber")] Customer customer)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(customer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    _context.Add(customer);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("", "Unable to save changes." +
+                    "Try again, and if the problem presists " +
+                    "see your system admin.");
             }
             return View(customer);
         }
@@ -84,40 +108,40 @@ namespace LicenseManagmentSystem.Controllers
         // POST: Customers/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,CompanyName,Address,ContactNumber")] Customer customer)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != customer.ID)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var customerToUpdate = await _context.Customers.SingleOrDefaultAsync(s => s.ID == id);
+            if (await TryUpdateModelAsync<Customer>(
+                customerToUpdate,
+                "",
+                s => s.CompanyName, s => s.Address, s => s.ContactNumber))
             {
                 try
                 {
-                    _context.Update(customer);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction("Index");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!CustomerExists(customer.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
-                return RedirectToAction("Index");
             }
-            return View(customer);
+            return View(customerToUpdate);
         }
 
         // GET: Customers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
+
         {
             if (id == null)
             {
@@ -125,10 +149,18 @@ namespace LicenseManagmentSystem.Controllers
             }
 
             var customer = await _context.Customers
+                .AsNoTracking()
                 .SingleOrDefaultAsync(m => m.ID == id);
             if (customer == null)
             {
                 return NotFound();
+            }
+
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed. Try again, and if the problem persists " +
+                    "see your system administrator.";
             }
 
             return View(customer);
@@ -139,10 +171,25 @@ namespace LicenseManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customer = await _context.Customers.SingleOrDefaultAsync(m => m.ID == id);
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            var customer = await _context.Customers
+                .AsNoTracking()
+                .SingleOrDefaultAsync(m => m.ID == id);
+            if (customer == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+            }
         }
 
         private bool CustomerExists(int id)

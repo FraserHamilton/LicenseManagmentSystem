@@ -1,0 +1,122 @@
+@model LicenseManagmentSystem.Models.ManagerViewModels.KeyIssuesView
+
+@{
+    ViewData["Title"] = "Keys";
+    var LicenseKeysExpiring = Model.LicenseKeysExpiring;
+    var LicenseKeys = Model.LicenseKeys;
+}
+
+<h2>Key Issues</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeysExpiring.FirstOrDefault().LicenseKeyID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeysExpiring.FirstOrDefault().CustomerID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeysExpiring.FirstOrDefault().ProductID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeysExpiring.FirstOrDefault().ExpiryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeysExpiring.FirstOrDefault().Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in LicenseKeysExpiring)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LicenseKeyID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.CompanyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Title)
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpiryDate)
+                </td>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Active)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.LicenseKeyID">Resolve</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2>License Keys</h2>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-action="Index" method="get">
+    <div class="form-actions">
+        <p>
+            Filter: <input type="text" name="SearchString" value="@ViewData["currentFilter"]" />
+            <input type="submit" value="Search" class="btn btn-default" /> |
+            <a asp-action="Index">See All</a>
+        </p>
+        <p>
+            <label class="radio-inline"><input type="radio" name="SearchOption" checked value="CustomerSearch">Customer</label>
+            <label class="radio-inline"><input type="radio" name="SearchOption" value="KeySearch">Key</label>
+        </p>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeys.FirstOrDefault().LicenseKeyID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeys.FirstOrDefault().CustomerID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeys.FirstOrDefault().ProductID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeys.FirstOrDefault().ExpiryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => LicenseKeys.FirstOrDefault().Active)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in LicenseKeys)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LicenseKeyID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.CompanyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Title)
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpiryDate)
+                </td>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Active)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.LicenseKeyID">Edit</a> | 
+                    <a asp-action="Delete" asp-route-id="@item.LicenseKeyID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

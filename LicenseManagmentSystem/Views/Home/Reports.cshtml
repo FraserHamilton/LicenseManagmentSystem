@@ -1,0 +1,30 @@
+@model IEnumerable<LicenseManagmentSystem.Models.ManagerViewModels.NumberOfLicenses>
+
+    @{
+        ViewData["Title"] = "Stats";
+    }
+
+    <h2>Pending Cancellations</h2>
+
+    <table>
+        <tr>
+            <th>
+                Product Name
+            </th>
+            <th>
+                License Keys
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @item.LicenseCount
+                </td>
+            </tr>
+        }
+    </table>
