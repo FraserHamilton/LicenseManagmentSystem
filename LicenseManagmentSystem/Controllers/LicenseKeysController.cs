@@ -96,8 +96,7 @@ namespace LicenseManagmentSystem.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "CompanyName", licenseKey.CustomerID);
-            ViewData["ProductID"] = new SelectList(_context.Products, "ProductID", "Title", licenseKey.ProductID);
+            
             return View(licenseKey);
         }
 
@@ -115,14 +114,15 @@ namespace LicenseManagmentSystem.Controllers
                 return NotFound();
             }
 
-            var licenseKey = await _context.LicenseKeys.SingleOrDefaultAsync(m => m.LicenseKeyID == id);
-            if (licenseKey == null)
+            var model = await _context.LicenseKeys.SingleOrDefaultAsync(m => m.LicenseKeyID == id);
+            if (model == null)
             {
                 return NotFound();
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID", licenseKey.CustomerID);
-            ViewData["ProductID"] = new SelectList(_context.Products, "ProductID", "ProductID", licenseKey.ProductID);
-            return View(licenseKey);
+            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "CompanyName", model.CustomerID);
+            ViewData["ProductID"] = new SelectList(_context.Products, "ProductID", "Title", model.ProductID);
+
+            return View(model);
         }
 
         // POST: LicenseKeys/Edit/5
@@ -157,8 +157,7 @@ namespace LicenseManagmentSystem.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "ID", "ID", licenseKey.CustomerID);
-            ViewData["ProductID"] = new SelectList(_context.Products, "ProductID", "ProductID", licenseKey.ProductID);
+
             return View(licenseKey);
         }
 

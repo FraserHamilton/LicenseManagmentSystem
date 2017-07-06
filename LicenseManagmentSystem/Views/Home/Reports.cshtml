@@ -1,20 +1,21 @@
 @model IEnumerable<LicenseManagmentSystem.Models.ManagerViewModels.NumberOfLicenses>
 
-    @{
-        ViewData["Title"] = "Stats";
-    }
+@{
+    ViewData["Title"] = "Stats";
+}
 
-    <h2>Pending Cancellations</h2>
+<h2>License Keys per Product</h2>
 
-    <table>
+<table class="table">
+    <thead>
         <tr>
-            <th>
-                Product Name
-            </th>
-            <th>
-                License Keys
-            </th>
+            <th>Product Name</th>
+            <th>License Keys</th>
+            <th></th>
         </tr>
+
+    </thead>
+    <tbody>
 
         @foreach (var item in Model)
         {
@@ -27,4 +28,6 @@
                 </td>
             </tr>
         }
-    </table>
+
+    </tbody>
+</table>
